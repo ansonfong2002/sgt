@@ -82,7 +82,7 @@ int main() {
     py_file << "from mapperLib import *\n\npath = \"./input\"\n";
     py_file << "def main():\n\tprint(\">> This program only needs to run once to generate all necessary input\")\n";
     py_file << "\ttry:\n\t\tos.mkdir(path)\n\texcept OSError:\n\t\tprint(\">> Folder already exists, continuing...\")\n";
-    py_file << "\tinputCanny()\n\tinputJPEG()\n\tinputInitialAPNG()\n\ndef inputCanny() -> (nx.classes.digraph.DiGraph, list):\n";
+    py_file << "\tinputGraph()\n\tinputJPEG()\n\tinputInitialAPNG()\n\ndef inputGraph() -> (nx.classes.digraph.DiGraph, list):\n";
     py_file << "\tG = nx.DiGraph()\n\n\tG.add_node('Din', name='Din', offChip=True)\n\tG.add_node('Dout', name='Dout', offChip=True)\n\n" << nodeText;
 
     // adding edges
@@ -102,13 +102,13 @@ int main() {
     }
 
     // body
-    py_file << "\n\tfile = os.path.join(path, \"canny.json\")\n\tsaveGraphToFile(G, file)\n\n\tplt.clf()\n";
+    py_file << "\n\tfile = os.path.join(path, \"graph.json\")\n\tsaveGraphToFile(G, file)\n\n\tplt.clf()\n";
     py_file << "\tfixed_pos = {'Din': (0.5,1),'Dout': (0.5, 0)}\n\tspring_pos = nx.spring_layout(G, pos=fixed_pos, fixed = ['Din', 'Dout'])\n\n";
     py_file << "\tfor node, pos in spring_pos.items():\n\t\tif node not in fixed_pos:\n\t\t\tspring_pos[node] = (pos[0],0.1+pos[1]%0.8)\n";
     py_file << "\tfixed_pos.update(spring_pos)\n\n\tcolorMap = []\n\tfor node in G.nodes:\n\t\tif node == 'Din' or node == 'Dout':\n\t\t\tcolorMap.append('yellow')\n\t\telse:\n\t\t\tcolorMap.append('lightblue')\n";
     py_file << "\tnx.draw(\n\t\tG, pos=fixed_pos, edge_color='black', width=1, linewidths=1,\n\t\tnode_size=500, node_color=colorMap, alpha=0.9,\n\t\tlabels={node: node for node in G.nodes()}\n\t)\n";
     py_file << "\tnx.draw_networkx_edge_labels(\n\t\tG, pos = fixed_pos,\n\t\tedge_labels={ ('Din', 'V0'): 'Din_V0',\n" << edgeText << "\t\t\t\t\t },\n\t\tfont_color='red'\n\t)\n";
-    py_file << "\tfile = os.path.join(path, \"canny.json\")\n\tplt.show()\n\tplt.savefig(file)\n\treturn G\n";
+    py_file << "\tfile = os.path.join(path, \"graph.json\")\n\tplt.show()\n\tplt.savefig(file)\n\treturn G\n";
     py_file << "\ndef inputInitialAPNG() -> nx.classes.digraph.DiGraph:  # tuple(nx.classes.digraph.DiGraph, list)\n\tG = nx.DiGraph()\n\n\tG.add_node('CS', name='CS', targets={}, startNode=True)\n\tG.add_node('SF', name='SF', targets={})\n";
     py_file << "\tG.add_node('AF', name='AF', targets={})\n\tG.add_node('UF', name='UF', targets={})\n\tG.add_node('PF', name='PF', targets={})\n\tG.add_node('Comparator', name='Comparator', targets={})\n\tG.add_node('Compressor', name='Compressor', targets={})\n";
     py_file << "\tG.add_node('Encoder', name='Encoder', targets={}, endNode=True)\n\n\tG.add_edges_from([('CS', 'SF'), ('CS', 'AF'), ('SF', 'UF'), ('UF', 'PF'), ('AF', 'Comparator'),\n\t\t\t\t\t  ('PF', 'Comparator'), ('Comparator', 'Compressor'), ('Compressor', 'Encoder')])";
