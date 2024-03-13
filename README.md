@@ -51,7 +51,7 @@
     - Running mapperInput.py using will create:
         - ./input/[canny.json] containing graph data for GPC compiler
         - Visualization of graph nodes/edges 
-        - Requires X11 remote graphics and Python 3+
+        - Requires X11 remote graphics (or other graphic support for matplotlib) and Python 3+
 
 # MakeFile Commands
 - "gg"
