@@ -44,6 +44,7 @@ int main() {
     string line;
 
     // READ CONFIG
+    int min, max, delay;
     ifstream config("./config/TLM.config");
     if (!config.is_open()) {
         cout << "<> Error: missing TLM.config\n>> Creating TLM.config\n>> Try again?\n";
@@ -240,7 +241,7 @@ int main() {
     // SC_MODULE(V0)
     sc_file << "SC_MODULE(V0) {\n\ttlm_utils::simple_initiator_socket<V0> input;\n\tsc_event &sig_in;\n\ttlm_utils::simple_initiator_socket<V0> output;\n\tsc_event &sig_out;\n\tvoid main(void)";
     sc_file << "{\n\t\tHostedSM SM0(output, sig_out, 0x00, 0x1000, ON_CHIP_MEMORY_SIZE);\n\t\tMemQ<int, 1> v0_out(SM0, offsetof(DUT_M0_Channels, V0_data));\n\t\twait(MEMQ_INITIALIZATION_DELAY);\n";
-    sc_file << "\t\tRemoteSM M0(input, sig_in, 0x00, OFF_CHIP_MEMORY_SIZE);\n\t\tMemQ<int, 1> v0_in(M0, offsetof(M0_Channels, input_data));\n\n\t\tint max = -1;\n\t\twhile (1) {\n\t\t\tv0_in.Pop(max);\n\t\t\tmax++;\n\t\t\twait(DELAY_FACTOR);\n\t\t\tv0_out.Push(max);\n\t\t}\n\t}";
+    sc_file << "\t\tRemoteSM M0(input, sig_in, 0x00, OFF_CHIP_MEMORY_SIZE);\n\t\tMemQ<int, 1> v0_in(M0, offsetof(M0_Channels, input_data));\n\n\t\tint max = -1;\n\t\twhile (1) {\n\t\t\twait(DELAY_FACTOR);\n\t\t\tv0_in.Pop(max);\n\t\t\tmax++;\n\t\t\tv0_out.Push(max);\n\t\t}\n\t}";
     sc_file << "\n\n\tSC_HAS_PROCESS(V0);\n\n\tV0(sc_module_name n, sc_event &sig_in, sc_event &sig_out)\n\t:sc_module(n)\n\t,sig_in(sig_in)\n\t,sig_out(sig_out)\n\t{\n\t\tSC_THREAD(main);\n\t\tSET_STACK_SIZE\n\t}\n};\n";
     
     /*  ITERATE: EDGES
@@ -313,7 +314,7 @@ int main() {
                 muxCounts[nodes[n].depth]++;
             }
         }
-        sc_file << SM_in << SM_text[n] << "\n\t\tint max = -1;\n\t\twhile (1) {\n" << functionText << "\t\t\twait(DELAY_FACTOR);\n\t\t\tv" + nodeStr + "_out.Push(max);\n\t\t}\n\t};\n";
+        sc_file << SM_in << SM_text[n] << "\n\t\tint max = -1;\n\t\twhile (1) {\n\t\t\twait(DELAY_FACTOR);\n" << functionText << "\t\t\tv" + nodeStr + "_out.Push(max);\n\t\t}\n\t};\n";
         sc_file << "\tSC_HAS_PROCESS(V" + nodeStr + ");\n\n\tV" << to_string(nodes[n].ID) << "(sc_module_name n" << sigH << ", sc_event &sig_out)\n\t:sc_module(n)\n" << sigB << "\t,sig_out(sig_out)\n\t{\n\t\tSC_THREAD(main);\n\t\tSET_STACK_SIZE\n\t}\n};\n";
 
         // DUT text

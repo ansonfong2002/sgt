@@ -11,7 +11,7 @@ typedef struct edge {
 
 void createConfig() {
     ofstream config("./config/TLM.config");
-    config << "// CONFIGURATION FILE (for TLM models)\n[TLM1]\n-- Delay Factor: 1\n\n[TLM2]\n-- Off-Chip Memory Size: 8*1024*1024\n-- Off-Chip Read Delay: 100\n-- Off-Chip Write Delay: 110\n-- On-Chip Memory Size: 4*1024*1024\n-- On-Chip Read Delay: 5\n-- On-Chip Write Delay: 6";
+    config << "// CONFIGURATION FILE (for TLM models)\n[TLM1]\n-- Delay Factor: 1\n\n[TLM2]\n-- Off-Chip Memory Size: 8*1024*1024\n-- Off-Chip Read Delay: 100\n-- Off-Chip Write Delay: 110\n-- On-Chip Memory Size: 4*1024*1024\n-- On-Chip Read Delay: 5\n-- On-Chip Write Delay: 6\n-- Delay Factor: 1";
     config.close();
 }
 

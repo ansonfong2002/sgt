@@ -53,7 +53,7 @@ void attachExtras(vector<vertex> &vertices, vector<vertex> &extras, set<edge> &e
     for (int i = 0; i < (int)extras.size(); i++) {
         bool connected = false;
         // attach extras to central vertices (EXTRA becomes depth [x + 1] VERTEX when connected to depth [x] VERTEX)
-        int j = rand() % ((int)vertices.size() - 2); // random index, omit terminal node and preceding node
+        int j = rand() % (height - 2); // random index, omit terminal node and preceding node
         while (!connected) {
             if (vertices[j].getDepth() < extras[i].getDepth() && vertices[j].capacity(max_num_out)) {    // checks [x] depth VERTEX for capacity
                 extras[i].setDepth(vertices[j].getDepth() + 1);

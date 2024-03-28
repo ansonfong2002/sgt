@@ -1,4 +1,4 @@
-# Overview: SYNTHETIC GRAPH TOOLBOX (SGT)
+# Overview SYNTHETIC GRAPH TOOLBOX (SGT)
 - Author: Anson Fong
 - Edited: March 12, 2024
 - Contains:
@@ -30,7 +30,10 @@
 
 # SystemC (TLM1 and TLM2) Translators [TLM1_SC_writer.cpp] [TLM2_SC_writer.cpp]
 - Use "make writeTLM1" or "make writeTLM2" to generate graph and SystemC code.
-    - Configure using [TLM.config]. Both models may not work if [TLM.config] contains bad input.
+    - Configure using [TLM.config]. Both models may fail if [TLM.config] contains bad input.
+        - On/Off-chip read/write delay units: ns
+        - Delay Factor units: ms
+        - Memory size units: bits
     - Translates [graph.txt] into SystemC (TLM1 or TLM2).
     - Creates output file [graph_TLM1.cpp] [graph_TLM2.cpp].
         - handles singular and non-singular output task graphs.
@@ -49,7 +52,7 @@
     - Parses graph output from [gg.cpp] to write a python script.
     - Although python script handles multiple terminal nodes, GPC compiler may not.
     - Running mapperInput.py using will create:
-        - ./input/[canny.json] containing graph data for GPC compiler
+        - ./input/[graph.json] containing graph data for GPC compiler
         - Visualization of graph nodes/edges 
         - Requires X11 remote graphics (or other graphic support for matplotlib) and Python 3+
 
