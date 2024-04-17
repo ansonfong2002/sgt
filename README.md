@@ -1,5 +1,4 @@
-# Overview 
-- SYNTHETIC GRAPH TOOLBOX (SGT)
+# SYNTHETIC GRAPH TOOLBOX (SGT)
 - Author: Anson Fong
 - Edited: March 12, 2024
 - Contains:
@@ -17,7 +16,8 @@
     - Makefile
     - Setup script [setup.csh]
 
-# Synthetic Task Graph Generator [gg.cpp]
+# Task Graph Generator 
+- [gg.cpp]
 - Use "make gg" to generate a graph
     - Generates directed acyclic graph using [gg.config].
     - Creates output file [graph.txt].
@@ -29,7 +29,8 @@
     - Default: uses random() at a fixed seed of 0.
     - Default: uses threshold value of 0.3 for appending edges.
 
-# SystemC (TLM1 and TLM2) Translators [TLM1_SC_writer.cpp] [TLM2_SC_writer.cpp]
+# SystemC (TLM1 and TLM2) Translators 
+- [TLM1_SC_writer.cpp] [TLM2_SC_writer.cpp]
 - Use "make writeTLM1" or "make writeTLM2" to generate graph and SystemC code.
     - Configure using [TLM.config]. Both models may fail if [TLM.config] contains bad input.
         - On/Off-chip read/write delay units: ns
@@ -41,13 +42,15 @@
     - Each node compares inputs with the highest input received, increments 1, passes it along the graph.
     - Output at Monitor will reveal longest paths to terminal node(s).
 
-# Simulating SystemC Models [graph_TLM1.cpp] [graph_TLM2.cpp]
+# Simulating SystemC Models
+- [graph_TLM1.cpp] [graph_TLM2.cpp]
 - Requires setup: run "source setup.csh"
 - Use "make testTLM1" or "make testTLM2" to run SystemC simulation.
     - Uses output from [gg.cpp] and [TLM1_SC_writer] or [TLM2_SC_writer] to build SystemC model.
     - Sends one stimulus signal "0" through the DUT, Monitor reveals longest path(s) to terminal node(s).
 
-# Python Script Generation [py_writer.cpp]
+# Python Script Generation
+- [py_writer.cpp]
 - Requires setup: run "source setup.csh"
 - Use "make mapper" to generate and run mapperInput.py file.
     - Parses graph output from [gg.cpp] to write a python script.
