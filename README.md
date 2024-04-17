@@ -18,6 +18,7 @@
 
 # Task Graph Generator 
 - [gg.cpp]
+- Developed for use in Linux.
 - Use "make gg" to generate a graph
     - Generates directed acyclic graph using [gg.config].
     - Creates output file [graph.txt].
@@ -31,6 +32,7 @@
 
 # SystemC (TLM1 and TLM2) Translators 
 - [TLM1_SC_writer.cpp] [TLM2_SC_writer.cpp]
+- Developed for use in Linux.
 - Use "make writeTLM1" or "make writeTLM2" to generate graph and SystemC code.
     - Configure using [TLM.config]. Both models may fail if [TLM.config] contains bad input.
         - On/Off-chip read/write delay units: ns
@@ -44,6 +46,7 @@
 
 # Simulating SystemC Models
 - [graph_TLM1.cpp] [graph_TLM2.cpp]
+- Developed for use in Linux.
 - Requires setup: run "source setup.csh"
 - Use "make testTLM1" or "make testTLM2" to run SystemC simulation.
     - Uses output from [gg.cpp] and [TLM1_SC_writer] or [TLM2_SC_writer] to build SystemC model.
@@ -51,6 +54,7 @@
 
 # Python Script Generation
 - [py_writer.cpp]
+- Developed for use in Linux.
 - Requires setup: run "source setup.csh"
 - Use "make mapper" to generate and run mapperInput.py file.
     - Parses graph output from [gg.cpp] to write a python script.
