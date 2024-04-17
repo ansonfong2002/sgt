@@ -1,4 +1,5 @@
-# Overview SYNTHETIC GRAPH TOOLBOX (SGT)
+# Overview 
+- SYNTHETIC GRAPH TOOLBOX (SGT)
 - Author: Anson Fong
 - Edited: March 12, 2024
 - Contains:
