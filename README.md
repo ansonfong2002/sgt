@@ -53,8 +53,8 @@
     - Although python script handles multiple terminal nodes, GPC compiler may not.
     - Running mapperInput.py using will create:
         - ./input/[graph.json] containing graph data for GPC compiler
-        - Visualization of graph nodes/edges 
-        - Requires X11 remote graphics (or other graphic support for matplotlib) and Python 3+
+        - Visualization of graph nodes/edges
+        - Developed on Linux. SSH through Windows requires X11 remote graphics.
 
 # MakeFile Commands
 - "gg"
