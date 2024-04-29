@@ -13,40 +13,42 @@ SRC_DIR = src
 ### Tools
 
 clean:
-	rm -f graph.txt
-	rm -f gg
-	rm -f TLM1_writer
-	rm -f TLM2_writer
-	rm -f graph_TLM1
-	rm -f graph_TLM2
-	rm -f py_writer
-	rm -f graph_TLM1.cpp
-	rm -f graph_TLM2.cpp
-	rm -f mapperInput.py
+	rm -f *.txt
+	rm -f *.out
+	rm -f *.cpp
+	rm -f *.py
 	rm -f input/*
 	rm -f lib/python/__pycache__/*
 
 gg: $(SRC_DIR)/gg.cpp
-	$(CC) $< -std=c++11 -Wall -o $@
-	./gg
+	$(CC) $< -std=c++11 -Wall -o gg.out
+	./gg.out
+
+writeGCPP: gg
+	$(CC) $(SRC_DIR)/writeGCPP.cpp -std=c++11 -Wall -o writeGCPP.out
+	./writeGCPP.out
 
 writeTLM1: gg
-	$(CC) $(SRC_DIR)/TLM1_SC_writer.cpp -std=c++11 -Wall -o TLM1_writer
-	./TLM1_writer
+	$(CC) $(SRC_DIR)/writeTLM1.cpp -std=c++11 -Wall -o writeTLM1.out
+	./writeTLM1.out
 
 writeTLM2: gg
-	$(CC) $(SRC_DIR)/TLM2_SC_writer.cpp -std=c++11 -Wall -o TLM2_writer
-	./TLM2_writer
+	$(CC) $(SRC_DIR)/writeTLM2.cpp -std=c++11 -Wall -o writeTLM2.out
+	./writeTLM2.out
+
+testGCPP: gg writeGCPP
+	$(CC) graph.cpp -pthread -o gcpp.out
+	./gcpp.out
 
 testTLM1: gg writeTLM1
-	$(CC) $(CCFLAGS) graph_TLM1.cpp -o graph_TLM1
-	./graph_TLM1
+	$(CC) $(CCFLAGS) graph_TLM1.cpp -o graph_TLM1.out
+	./graph_TLM1.out
 
 testTLM2: gg writeTLM2
-	$(CC) $(CCFLAGS) graph_TLM2.cpp -o graph_TLM2
-	./graph_TLM2
+	$(CC) $(CCFLAGS) graph_TLM2.cpp -o graph_TLM2.out
+	./graph_TLM2.out
 
 mapper: gg
-	$(CC) $(SRC_DIR)/py_writer.cpp -std=c++11 -Wall -o py_writer
-	./py_writer
+	$(CC) $(SRC_DIR)/writePY.cpp -std=c++11 -Wall -o writePY.out
+	./writePY.out
 	python3 mapperInput.py
