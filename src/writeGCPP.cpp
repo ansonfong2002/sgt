@@ -219,6 +219,7 @@ int main() {
         string sourceStr = line.substr(parseIndex, parseBreak - parseIndex);    // source node
         int source = stoi(sourceStr);
         nodes[source].ID = source;
+        nodes[source].terminal = 0;
 
         // set next evaluation point, look for bracket
         parseIndex = parseBreak + 6; 

@@ -167,9 +167,9 @@ int main() {
     string DUT_memI, DUT_muxI, DUT_nodeI;
     string DUT_muxB, DUT_nodeB;
     string DUT_outputs;
-    string Dout_output, Dout_SM, Dout_funct;
+    string Dout_output, Dout_data, Dout_SM, Dout_spawn, Dout_funct;
     string plat_dut, plat_dout;
-    string t_inputs, t_channels, t_data, t_monitor, t_channelB, t_channelI, t_top;
+    string t_inputs, t_channels, t_data, t_monitor, t_threads, t_channelB, t_channelI, t_top;
 
     // title + header
     sc_file << "// SystemC representation of generated task graph: graph.txt\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include \"systemc.h\"\n\n";
@@ -218,8 +218,10 @@ int main() {
     
         // DataOut Text
         Dout_output += "\tsc_fifo_out<int> outputV" + t_str + ";\n";
+        Dout_data += "\tint data_V" + t_str + ";\n";
         Dout_SM += "\t\tMemQ<int, 1> dout_V" + t_str + "(SM2, offsetof(M" + to_string(terminals[0]) + "_Channels, V" + t_str + "_data));\n";
-        Dout_funct += "\t\t\tdout_V" + t_str + ".Pop(data);\n\t\t\toutputV" + t_str + ".write(data);\n";
+        Dout_spawn += "\t\tsc_spawn(sc_bind(&DataOut::read_V" + t_str + ", this, dout_V" + t_str + "));\n";
+        Dout_funct += "\tvoid read_V" + t_str + "(MemQ<int, 1> dout_V" + t_str + ") {\n\t\tdout_V" + t_str + ".Pop(data_V" + t_str + ");\n\t\toutputV" + t_str + ".write(data_V" + t_str + ");\n\t}\n";
     
         // Platform text
         plat_dout += "\t\tdout.outputV" + t_str + ".bind(outputV" + t_str + ");\n";
@@ -231,7 +233,8 @@ int main() {
         t_channels += "\tsc_fifo_in<int> t" + m_str + ";\n";
         t_top +=  "\tsc_fifo<int> t" + m_str + ";\n";
         t_data += "\tint data_V" + t_str + ";\n";
-        t_monitor += "\n\t\tinputV" + t_str + ".read(data_V" + t_str + ");\n\t\tt2 = sc_time_stamp();\n\t\tt = t2 - t1;\n\t\tprintf(\">> %9s: Monitor received output [%d] from V" + t_str + " after %9s delay.\\n\", t2.to_string().c_str(), data_V" + t_str + ", t.to_string().c_str());";
+        t_monitor += "\tvoid read_V" + t_str + "() {\n\t\tsc_time t, t2;\n\t\tinputV" + t_str + ".read(data_V" + t_str + ");\n\t\tt2 = sc_time_stamp();\n\t\tt = t2 - t1;\n\t\tprintf(\">> %9s: Monitor received output [%d] from V" + t_str + " after %9s delay.\\n\", t2.to_string().c_str(), data_V" + t_str + ", t.to_string().c_str());\n\t}\n";
+        t_threads += "\t\tSC_THREAD(read_V" + t_str + ");\n";
         t_channelI += "\t,t" + m_str + "(\"t" + m_str + "\", 1)\n";
         t_channelB += "\t\tplatform.outputV" + t_str + ".bind(t" + m_str + ");\n\t\tmonitor.inputV" + t_str + ".bind(t" + m_str + ");\n";
     }
@@ -332,8 +335,8 @@ int main() {
     sc_file << "\t\twait(MEMQ_INITIALIZATION_DELAY);\n\t\twhile (1) {\n\t\t\tinput.read(data);\n\t\t\tdin_out.Push(data);\n\t\t}\n\t}\n\tSC_HAS_PROCESS(DataIn);\n\tDataIn(sc_module_name n, sc_event &sig_out)\n\t:sc_module(n)\n\t,sig_out(sig_out)\n\t{\n\t\tSC_THREAD(main);\n\t\tSET_STACK_SIZE\n\t}\n};\n";
     
     // SC_MODULE(DataOut)
-    sc_file << "SC_MODULE(DataOut) {\n\ttlm_utils::simple_initiator_socket<DataOut> input;\n\tsc_event &sig_in;\n" << Dout_output << "\tint data;\n\tvoid main() {\n\t\tHostedSM SM2(input, sig_in, 0x00, 0x1000, OFF_CHIP_MEMORY_SIZE);\n" << Dout_SM << "\t\twait(MEMQ_INITIALIZATION_DELAY);\n";
-    sc_file << "\t\twhile (1) {\n" << Dout_funct << "\t\t}\n\t}\n\tSC_HAS_PROCESS(DataOut);\n\tDataOut(sc_module_name n, sc_event &sig_in)\n\t:sc_module(n)\n\t,sig_in(sig_in)\n\t{\n\t\tSC_THREAD(main)\n\t\tSET_STACK_SIZE\n\t}\n};\n";
+    sc_file << "SC_MODULE(DataOut) {\n\ttlm_utils::simple_initiator_socket<DataOut> input;\n\tsc_event &sig_in;\n" << Dout_output << "\n" << Dout_data << "\n\tvoid main() {\n\t\tHostedSM SM2(input, sig_in, 0x00, 0x1000, OFF_CHIP_MEMORY_SIZE);\n" << Dout_SM << "\t\twait(MEMQ_INITIALIZATION_DELAY);\n" << Dout_spawn << "\t}\n";
+    sc_file << Dout_funct << "\tSC_HAS_PROCESS(DataOut);\n\tDataOut(sc_module_name n, sc_event &sig_in)\n\t:sc_module(n)\n\t,sig_in(sig_in)\n\t{\n\t\tSC_THREAD(main)\n\t\tSET_STACK_SIZE\n\t}\n};\n";
     
     // SC_MODULE(Platform)
     sc_file << "SC_MODULE(Platform) {\n\tsc_fifo_in<int> input;\n" << Dout_output << "\n\tMemory mem1, mem2;\n\tMux_N<2> mux1;\n\tMux_N<" << to_string(terminals.size() + 1) << "> mux2;\n\tsc_event sig1, sig2;\n\n\tDataIn din;\n\tDUT dut;\n\tDataOut dout;\n\n";
@@ -345,7 +348,7 @@ int main() {
     sc_file << "SC_MODULE(Stimulus) {\n\tsc_fifo_out<int> output;\n\tsc_fifo_out<sc_time> StartTime;\n\tint data = 0;\n\tvoid main(void) {\n\t\tsc_time t;\n\t\toutput.write(data);\n\t\tt = sc_time_stamp();\n\t\tprintf(\"<> %9s: Stimulus sent.\\n\", t.to_string().c_str());\n\t\tStartTime.write(t);\n\t}\n\tSC_CTOR(Stimulus) {\n\t\tSC_THREAD(main);\n\t}\n};\n";
 
     // SC_MODULE(Monitor)
-    sc_file << "SC_MODULE(Monitor) {\n" << t_inputs << "\tsc_fifo_in<sc_time> StartTime;\n" << t_data << "\tvoid main() {\n\t\tsc_time t, t1, t2;" << t_monitor << "\n\t}\n\tSC_CTOR(Monitor) {\n\t\tSC_THREAD(main);\n\t}\n};\n";
+    sc_file << "SC_MODULE(Monitor) {\n" << t_inputs << "\tsc_fifo_in<sc_time> StartTime;\n" << t_data << "\n\tsc_time t1;\n\n\tvoid main() {\n\t\tStartTime.read(t1);\n\t}\n" << t_monitor << "\tSC_CTOR(Monitor) {\n\t\tSC_THREAD(main);\n" << t_threads << "\t}\n};\n";
 
     // SC_MODULE(Top)
     sc_file << "SC_MODULE(Top) {\n\tsc_fifo<int> q0;\n" << t_top << "\tsc_fifo<sc_time> qt;\n\tStimulus stimulus;\n\tPlatform platform;\n\tMonitor monitor;\n\tSC_CTOR(Top)\n\t:q0(\"q0\", 1)\n" << t_channelI <<"\t,qt(\"qt\", 1)\n\t,stimulus(\"stimulus\")\n\t,platform(\"platform\")\n\t,monitor(\"monitor\")\n";
