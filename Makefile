@@ -57,3 +57,7 @@ ATG: gg writeGCPP
 	$(CC) $(SRC_DIR)/writeATG.cpp -std=c++11 -Wall -o writeATG.out
 	./writeATG.out
 	python3 ATG_parser.py
+
+unparse: gg writeGCPP ATG
+	$(CC) graph_unparse.cpp -std=c++11 -Wall -I ./lib/GPCC -l pthread -o unparse.out
+	./unparse.out
