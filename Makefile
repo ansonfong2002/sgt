@@ -49,6 +49,11 @@ testTLM2: gg writeTLM2
 	./graph_TLM2.out
 
 mapper: gg
-	$(CC) $(SRC_DIR)/writePY.cpp -std=c++11 -Wall -o writePY.out
-	./writePY.out
-	python3 mapperInput.py
+	$(CC) $(SRC_DIR)/writeMapper.cpp -std=c++11 -Wall -o writeMapper.out
+	./writeMapper.out
+	python3 mapper.py
+
+ATG: gg writeGCPP
+	$(CC) $(SRC_DIR)/writeATG.cpp -std=c++11 -Wall -o writeATG.out
+	./writeATG.out
+	python3 ATG_parser.py

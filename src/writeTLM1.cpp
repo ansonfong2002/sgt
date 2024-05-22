@@ -62,11 +62,11 @@ int main() {
         int source = stoi(line.substr(parseIndex, parseBreak - parseIndex));    // source node
         
         // set next evaluation point, look for bracket
-        parseIndex = parseBreak + 6; 
+        parseIndex = line.find_first_of("V", parseBreak) + 1;
         parseBreak = line.find_first_of("[", parseIndex);
         
         // grab edges, if they exist
-        while (parseBreak != (int)line.npos) {                   // while information still remains: node connects to others
+        while (parseBreak != (int)line.npos && parseIndex != 0) {                   // while information still remains: node connects to others
             // grab dest
             int dest = stoi(line.substr(parseIndex, parseBreak - parseIndex));  // dest node
             
@@ -84,7 +84,7 @@ int main() {
             functionOutput[i] += "\t\t\tV" + to_string(dest) + ".write(max + 1);\n";
             
             // set next evaluation point, look for bracket
-            parseIndex = parseBreak + 5;
+            parseIndex = line.find_first_of(",", parseBreak) + 2;
             parseBreak = line.find_first_of("[", parseIndex);
         }
     }

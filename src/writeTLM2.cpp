@@ -100,11 +100,11 @@ int main() {
         nodes[i].depth = SRC_depth;
         nodes[i].terminal = 0;
 
-        parseIndex = parseBreak + 4;                    // set new evaluation point, after '[d]: V'
+        parseIndex = line.find_first_of("V", parseBreak) + 1;    // set new evaluation point, after '[d]: V'
         parseBreak = line.find_first_of("[", parseIndex);   // set new break point, next '['. If no bracket exists, parseBreak = npos
-        
+
         // determine: terminal || host || remote
-        if (parseBreak == (int)line.npos) {
+        if (parseBreak == (int)line.npos || parseIndex == 0) {
             nodes[i].terminal = 1;
             nodes[i].host = 0;
             terminals.push_back(source);
@@ -124,13 +124,12 @@ int main() {
         }
 
         // grab edges, if they exist
-        while (parseBreak != (int)line.npos) {
+        while (parseBreak != (int)line.npos && parseIndex != 0) {
             // grab dest and depth
             int dest = stoi(line.substr(parseIndex, parseBreak - parseIndex));  // dest node
             parseIndex = parseBreak + 1;
             parseBreak = line.find_first_of("]", parseIndex);
             int DEST_depth = stoi(line.substr(parseIndex, parseBreak - parseIndex));    // dest depth
-            parseIndex = parseBreak + 3;                        // set new evaluation point, after '[d],V'
             
             // create edge
             edge newEdge;
@@ -148,6 +147,7 @@ int main() {
                 nodes[dest].stageConnections.push_back(SRC_depth);
             }
 
+            parseIndex = line.find_first_of("V", parseBreak) + 1;    // set new evaluation point, after '[d],V'
             // set new break point, next '['. If no bracket exists, parseBreak = npos
             parseBreak = line.find_first_of("[", parseIndex);
         }
